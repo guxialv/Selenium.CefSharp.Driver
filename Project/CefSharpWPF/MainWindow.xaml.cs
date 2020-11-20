@@ -1,4 +1,6 @@
-﻿using Selenium.CefSharp.Driver;
+﻿using CefSharp;
+using CefSharpWPF.Handlers;
+using Selenium.CefSharp.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,7 @@ namespace CefSharpWPF
             InitializeComponent();
 
             browser.IsBrowserInitializedChanged += Browser_IsBrowserInitializedChanged;
+            browser.LifeSpanHandler = new LifeSpanHandler();
             this.DataContext = new MainWindowViewModel();
         }
 
@@ -40,7 +43,9 @@ namespace CefSharpWPF
         {
             if ((bool)e.NewValue)
             {
-                ViewModel.CefSharpDriver = new CefSharpDriver(browser);
+                ViewModel.InitCefSharpDriver(browser);
+                //browser.ShowDevTools();
+                //browser.GetDevToolsClient().Inspector.EnableAsync();
             }
         }
 

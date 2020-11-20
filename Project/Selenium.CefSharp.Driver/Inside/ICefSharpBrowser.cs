@@ -1,5 +1,6 @@
 ﻿using CefSharp;
 using System;
+using System.Drawing;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
@@ -11,5 +12,10 @@ namespace Selenium.CefSharp.Driver.Inside
         IntPtr WindowHandle { get; }
         void WaitForLoading();
         void Close();
+
+        Size Size { get; }
+
+        void Activate();
+        Point PointToScreen(Point clientPoint);
     }
 }

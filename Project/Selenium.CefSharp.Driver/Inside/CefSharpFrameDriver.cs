@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace Selenium.CefSharp.Driver.Inside
@@ -9,15 +10,11 @@ namespace Selenium.CefSharp.Driver.Inside
     class CefSharpFrameDriver : IJavaScriptExecutor
     {
         readonly JavaScriptAdaptor _javaScriptAdaptor;
-        //readonly Func<AppVar> _frameGetter;
-        //readonly CotnrolAccessor _cotnrolAccessor;
-
-        //public WindowsAppFriend App => (WindowsAppFriend)AppVar.App;
 
         public IFrame Frame { get; private set; }
         public IJavascriptObjectRepository JavascriptObjectRepository => CefSharpDriver.JavascriptObjectRepository;
 
-        //  public Size Size => FrameElements.Any() ? FrameElements.Last().Size : CefSharpDriver.CurrentBrowser.Size;
+        public Size Size => FrameElements.Any() ? FrameElements.Last().Size : CefSharpDriver.CurrentBrowser.Size;
 
         internal string Url
         {
@@ -49,6 +46,8 @@ namespace Selenium.CefSharp.Driver.Inside
 
         public object ExecuteScript(string script, params object[] args)
             => _javaScriptAdaptor.ExecuteScript(script, args);
+        public object ExecuteScript2(string script, params object[] args)
+    => _javaScriptAdaptor.ExecuteScript2(script, args);
 
         public object ExecuteAsyncScript(string script, params object[] args)
             => _javaScriptAdaptor.ExecuteAsyncScript(script, args);
@@ -61,26 +60,26 @@ namespace Selenium.CefSharp.Driver.Inside
             var offset = new Point();
             foreach (var e in FrameElements)
             {
-                offset.Offset(e.Location);
+                offset.Offset(e.Location.X, e.Location.Y);
             }
-            clientPoint.Offset(offset);
-            //return CefSharpDriver.CurrentBrowser.PointToScreen(clientPoint);
-            throw new NotImplementedException();
+            clientPoint.Offset(offset.X, offset.Y);
+            return CefSharpDriver.CurrentBrowser.PointToScreen(clientPoint);
         }
 
         public void Activate()
         {
-            //=> CefSharpDriver.CurrentBrowser.Activate();
-            throw new NotImplementedException();
+            CefSharpDriver.CurrentBrowser.Activate();
         }
 
         public IWebElement CreateWebElement(int id)
-            => new CefSharpWebElement(this, id);
+        {
+            return new CefSharpWebElement(this, id);
+        }
+
 
         public Screenshot GetScreenshot()
         {
-            //=> _cotnrolAccessor.GetScreenShot(new Point(0, 0), Size);
-            throw new NotImplementedException();
+            return GetScreenShot(new Point(0, 0), CefSharpDriver.CurrentBrowser.Size);
         }
 
         public override bool Equals(object obj)
@@ -90,6 +89,25 @@ namespace Selenium.CefSharp.Driver.Inside
             return this.Frame.Identifier.Equals(target.Frame.Identifier);
         }
 
-        public override int GetHashCode() => (int)this.Frame.Identifier;
+        public override int GetHashCode()
+        {
+            return (int)this.Frame.Identifier;
+        }
+
+        internal Screenshot GetScreenShot(Point location, Size size)
+        {
+            CefSharpDriver.CurrentBrowser.Activate();
+            using (var bmp = new Bitmap((int)size.Width, (int)size.Height))
+            using (var g = Graphics.FromImage(bmp))
+            {
+                var upLeft = CefSharpDriver.CurrentBrowser.PointToScreen(location);
+                g.CopyFromScreen(upLeft, new Point(0, 0), bmp.Size);
+                using (var ms = new MemoryStream())
+                {
+                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                    return new Screenshot(Convert.ToBase64String(ms.ToArray()));
+                }
+            }
+        }
     }
 }

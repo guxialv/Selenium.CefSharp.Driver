@@ -475,11 +475,11 @@ namespace Selenium.CefSharp.Driver
         internal void Focus()
             => Execute(JsFocus());
 
-        object Execute(string js)
+        public object Execute(string js)
             => JavaScriptExecutor.ExecuteScript(js, this);
 
-        T Execute<T>(string js)
-            => (T)JavaScriptExecutor.ExecuteScript(js, this);
+        public T Execute<T>(string js)
+              => (T)JavaScriptExecutor.ExecuteScript(js, this);
 
         static string JsGetAttribute(string attrName) => $@"
 const elem = arguments[0];

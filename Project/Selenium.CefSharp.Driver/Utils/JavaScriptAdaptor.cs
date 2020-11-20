@@ -14,6 +14,7 @@ namespace Selenium.CefSharp.Driver.Inside
 {
     class JavaScriptAdaptor
     {
+        const string JsDestroy = @"document.SWD_Page_Recorder.removeEventListener();";
         const string JsInitialize = @"
 (function () {
 
@@ -134,6 +135,13 @@ return val;
             return ConvertExecuteScriptResult(result);
         }
 
+        public object ExecuteScript2(string script, params object[] args)
+        {
+            var result = ExecuteScriptInternal2(script, args);
+            // var rawResult = (result as DynamicAppVar)?.CodeerFriendlyAppVar?.Core;
+            return ConvertExecuteScriptResult(result);
+        }
+
         public object ExecuteAsyncScript(string script, params object[] args)
         {
             var result = ExecuteScriptAsyncInternal(script, args);
@@ -165,6 +173,26 @@ return val;
             return JSResultConverter.ConvertToSelializable(execResult.Result);
         }
 
+        object ExecuteScriptInternal2(string script, params object[] args)
+        {
+            _frame.WaitForLoading();
+            //var initializeResult = ExecuteScriptCore(JsInitialize);
+
+            var execResult = ExecuteScriptCore(script, args);
+            if (!execResult.Success)
+            {
+                var errorMessage = execResult.Message;
+                // TODO: Somehow make a pattern.
+                var formattedErrorMessage = errorMessage.Split('\n')[0].Substring("Uncaught".Length).Trim();
+                if (formattedErrorMessage == "EntriedElementNotFound")
+                {
+                    throw new StaleElementReferenceException(
+                        "stale element reference: element is not attached to the page document");
+                }
+                throw new WebDriverException(errorMessage);
+            }
+            return JSResultConverter.ConvertToSelializable(execResult.Result);
+        }
         JavascriptResponse ExecuteScriptCore(string src, params object[] args)
             => _frame.Frame.EvaluateScriptAsync(ConvertCefSharpScript(src, args), "about:blank", 1, null).Result;
 

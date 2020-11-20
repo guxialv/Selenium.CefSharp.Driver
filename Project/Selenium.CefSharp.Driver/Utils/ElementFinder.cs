@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
-    static class ElementFinder
+    public static class ElementFinder
     {
-        internal static IWebElement FindElementFromDocument(CefSharpFrameDriver js, By by)
+        internal static IWebElement FindElementFromDocument(IJavaScriptExecutor js, By by)
         {
             var text = by.ToString();
             var script = "";
@@ -49,7 +49,7 @@ namespace Selenium.CefSharp.Driver.Inside
             return result;
         }
 
-        internal static ReadOnlyCollection<IWebElement> FindElementsFromDocument(CefSharpFrameDriver js, By by)
+        internal static ReadOnlyCollection<IWebElement> FindElementsFromDocument(IJavaScriptExecutor js, By by)
         {
             var text = by.ToString();
             var script = "";
@@ -151,7 +151,7 @@ return window.__seleniumCefSharpDriver.getElementsByXPath('.//a[contains(., ""{t
             return result;
         }
 
-        internal static ReadOnlyCollection<IWebElement> FindElementsFromElement(CefSharpFrameDriver js, int id, By by)
+        internal static ReadOnlyCollection<IWebElement> FindElementsFromElement(IJavaScriptExecutor js, int id, By by)
         {
             var text = by.ToString();
             var script = "";
@@ -208,6 +208,51 @@ return window.__seleniumCefSharpDriver.getElementsByXPath('.//a[contains(., ""{t
                 return new ReadOnlyCollection<IWebElement>(new List<IWebElement>());
             }
             return result;
+        }
+
+
+
+        internal static void HighlightElement(IWebElement webElement, IJavaScriptExecutor js, By by)
+        {
+            var element = webElement.FindElement(by);
+            js.ExecuteScript(
+            @"
+                element = arguments[0];
+                original_style = element.getAttribute('style');
+                element.setAttribute('style', original_style + ""; background: yellow; border: 2px solid red;"");
+                setTimeout(function(){
+                    element.setAttribute('style', original_style);
+                }, 300);
+
+           ", element);
+        }
+
+        public static string GetElementXPath()
+        {
+            return
+ @"
+function getPathTo(element) {
+    if (element === document.body)
+        return '/html/' + element.tagName.toLowerCase();
+
+    var ix = 0;
+    var siblings = element.parentNode.childNodes;
+    for (var i = 0; i < siblings.length; i++) {
+        var sibling = siblings[i];
+        if (sibling === element)
+        {
+            return getPathTo(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
+        }
+        if (sibling.nodeType === 1 && sibling.tagName === element.tagName)
+            ix++;
+    }
+}
+
+var element = arguments[0];
+var xpath = '';
+xpath = getPathTo(element);
+return xpath;
+";
         }
     }
 }

@@ -36,11 +36,12 @@ namespace CefSharpWPF.Behaviors
         protected override void OnAttached()
         {
             AssociatedObject.StatusMessage += OnStatusMessageChanged;
-            AssociatedObject.ConsoleMessage += OnConsoleMessageChanged;
+            //AssociatedObject.ConsoleMessage += OnConsoleMessageChanged;
         }
 
         private void OnConsoleMessageChanged(object sender, ConsoleMessageEventArgs e)
         {
+            Console.WriteLine($"{e.Level} {e.Message}");
             var chromiumWebBrowser = sender as ChromiumWebBrowser;
             chromiumWebBrowser.Dispatcher.BeginInvoke((Action)(() => OutputMessage = e.Message));
         }
@@ -48,7 +49,7 @@ namespace CefSharpWPF.Behaviors
         protected override void OnDetaching()
         {
             AssociatedObject.StatusMessage -= OnStatusMessageChanged;
-            AssociatedObject.ConsoleMessage -= OnConsoleMessageChanged;
+            // AssociatedObject.ConsoleMessage -= OnConsoleMessageChanged;
         }
 
         private void OnStatusMessageChanged(object sender, StatusMessageEventArgs e)

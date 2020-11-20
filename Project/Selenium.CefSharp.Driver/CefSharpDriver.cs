@@ -272,7 +272,7 @@ namespace Selenium.CefSharp.Driver
         /// </summary>
         /// <returns>A <see cref="Screenshot"/> object containing the image.</returns>
         public Screenshot GetScreenshot()
-            => CurrentBrowser.CurrentFrame.GetScreenshot();
+            => CurrentBrowser.MainFrame.GetScreenshot();
 
         /// <summary>
         /// Performs the specified list of actions with this action executor.
@@ -343,7 +343,9 @@ namespace Selenium.CefSharp.Driver
         /// </para>
         /// </remarks>
         public object ExecuteScript(string script, params object[] args)
-            => CurrentBrowser.CurrentFrame.ExecuteScript(script, args);
+            => CurrentBrowser.MainFrame.ExecuteScript(script, args);
+        public object ExecuteScript2(string script, params object[] args)
+           => CurrentBrowser.MainFrame.ExecuteScript2(script, args);
 
         /// <summary>
         /// Executes JavaScript asynchronously in the context of the currently selected frame or window.
@@ -352,7 +354,7 @@ namespace Selenium.CefSharp.Driver
         /// <param name="args">The arguments to the script.</param>
         /// <returns>The value returned by the script.</returns>
         public object ExecuteAsyncScript(string script, params object[] args)
-            => CurrentBrowser.CurrentFrame.ExecuteAsyncScript(script, args);
+            => CurrentBrowser.MainFrame.ExecuteAsyncScript(script, args);
 
         /// <summary>
         /// Finds the first element matching the specified id.

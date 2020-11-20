@@ -150,9 +150,9 @@ return val;
             var initializeResult = ExecuteScriptCore(JsInitialize);
 
             var execResult = ExecuteScriptCore(script, args);
-            if (!(bool)execResult.Success)
+            if (!execResult.Success)
             {
-                var errorMessage = (string)execResult.Message;
+                var errorMessage = execResult.Message;
                 // TODO: Somehow make a pattern.
                 var formattedErrorMessage = errorMessage.Split('\n')[0].Substring("Uncaught".Length).Trim();
                 if (formattedErrorMessage == "EntriedElementNotFound")

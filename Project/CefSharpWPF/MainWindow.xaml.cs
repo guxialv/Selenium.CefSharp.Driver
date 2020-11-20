@@ -44,11 +44,6 @@ namespace CefSharpWPF
             }
         }
 
-        private void Browser_Initialized(object sender, EventArgs e)
-        {
-            ViewModel.CefSharpDriver = new CefSharpDriver(browser);
-        }
-
         private void OnTextBoxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             var textBox = (TextBox)sender;

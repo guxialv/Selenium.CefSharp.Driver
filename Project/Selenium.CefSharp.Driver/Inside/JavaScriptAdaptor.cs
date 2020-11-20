@@ -1,5 +1,4 @@
-﻿using Codeer.Friendly.Dynamic;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -8,6 +7,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Selenium.CefSharp.Driver.InTarget;
 using System.Text;
+using CefSharp;
+using System.Threading.Tasks;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
@@ -129,26 +130,26 @@ return val;
         public object ExecuteScript(string script, params object[] args)
         {
             var result = ExecuteScriptInternal(script, args);
-            var rawResult = (result as DynamicAppVar)?.CodeerFriendlyAppVar?.Core;
-            return ConvertExecuteScriptResult(rawResult);
+            // var rawResult = (result as DynamicAppVar)?.CodeerFriendlyAppVar?.Core;
+            return ConvertExecuteScriptResult(result);
         }
 
         public object ExecuteAsyncScript(string script, params object[] args)
         {
             var result = ExecuteScriptAsyncInternal(script, args);
-            var rawResult = (result as DynamicAppVar)?.CodeerFriendlyAppVar?.Core;
-            return ConvertExecuteScriptResult(rawResult);
+            // var rawResult = (result as DynamicAppVar)?.CodeerFriendlyAppVar?.Core;
+            return ConvertExecuteScriptResult(result);
         }
 
         static string JsFindElementByEntryIdScriptBody(int id)
             => $"window.__seleniumCefSharpDriver.getElementByEntryId({id})";
 
-        dynamic ExecuteScriptInternal(string script, params object[] args)
+        object ExecuteScriptInternal(string script, params object[] args)
         {
             _frame.WaitForLoading();
-            dynamic initializeResult = ExecuteScriptCore(JsInitialize);
+            var initializeResult = ExecuteScriptCore(JsInitialize);
 
-            dynamic execResult = ExecuteScriptCore(script, args);
+            var execResult = ExecuteScriptCore(script, args);
             if (!(bool)execResult.Success)
             {
                 var errorMessage = (string)execResult.Message;
@@ -161,34 +162,33 @@ return val;
                 }
                 throw new WebDriverException(errorMessage);
             }
-            return _frame.App.Type<JSResultConverter>().ConvertToSelializable(execResult.Result);
+            return JSResultConverter.ConvertToSelializable(execResult.Result);
         }
 
-        dynamic ExecuteScriptCore(string src, params object[] args)
-            => _frame.Dynamic().EvaluateScriptAsync(ConvertCefSharpScript(src, args), "about:blank", 1, null).Result;
+        JavascriptResponse ExecuteScriptCore(string src, params object[] args)
+            => _frame.Frame.EvaluateScriptAsync(ConvertCefSharpScript(src, args), "about:blank", 1, null).Result;
 
-        dynamic ExecuteScriptAsyncInternal(string script, params object[] args)
+        object ExecuteScriptAsyncInternal(string script, params object[] args)
         {
             _frame.WaitForLoading();
             ExecuteScriptCore(JsInitialize);
 
-            var callbackObj = _frame.App.Type<AsyncResultBoundObject>()();
+            var callbackObj = new AsyncResultBoundObject();
             var scriptId = $"_cefsharp_script_{Guid.NewGuid():N}";
-            var BindingOptions = _frame.App.Type("CefSharp.BindingOptions");
 
-            _frame.JavascriptObjectRepository.Dynamic().Register(scriptId, callbackObj, true, BindingOptions.DefaultBinder);
+            _frame.JavascriptObjectRepository.Register(scriptId, callbackObj, true, BindingOptions.DefaultBinder);
             ExecuteScriptAsyncCore(scriptId, script, args);
             while (!(bool)callbackObj.IsCompleted)
             {
                 Thread.Sleep(10);
             }
 
-            _frame.JavascriptObjectRepository.Dynamic().UnRegister(scriptId);
+            _frame.JavascriptObjectRepository.UnRegister(scriptId);
             return callbackObj.Value;
         }
 
-        dynamic ExecuteScriptAsyncCore(string scriptId, string src, params object[] args)
-            => _frame.Dynamic().EvaluateScriptAsync(ConvertCefSharpAsyncScript(scriptId, src, args), "about:blank", 1, null).Result;
+        JavascriptResponse ExecuteScriptAsyncCore(string scriptId, string src, params object[] args)
+            => _frame.Frame.EvaluateScriptAsync(ConvertCefSharpAsyncScript(scriptId, src, args), "about:blank", 1, null).Result;
 
         string ConvertCefSharpScript(string script, object[] args)
             => $"(function() {{ const result = (function() {{ {script} }})({ConvertScriptParameters(args)}); \r\n return {ConvertResultInJavaScriptString} }})();";

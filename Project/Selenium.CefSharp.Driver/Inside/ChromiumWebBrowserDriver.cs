@@ -1,123 +1,110 @@
-﻿using Codeer.Friendly;
-using Codeer.Friendly.Dynamic;
-using Codeer.Friendly.Windows;
-using Codeer.Friendly.Windows.Grasp;
-using System;
+﻿using System;
 using System.Threading;
-using Selenium.CefSharp.Driver.InTarget;
-using Codeer.Friendly.DotNetExecutor;
-using System.Drawing;
 using OpenQA.Selenium;
+using CefSharp.Wpf;
+using CefSharp;
+using System.Windows;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
-    class ChromiumWebBrowserDriver :
-        IAppVarOwner,
-        ICefSharpBrowser
+    class ChromiumWebBrowserDriver : ICefSharpBrowser
     {
-        readonly dynamic _webBrowserExtensions;
+        //readonly dynamic _webBrowserExtensions;
 
-        public WindowsAppFriend App => (WindowsAppFriend)AppVar.App;
+        //public WindowsAppFriend App => (WindowsAppFriend)AppVar.App;
 
-        public AppVar AppVar { get; }
+        public ChromiumWebBrowser Browser { get; }
 
         public CefSharpFrameDriver MainFrame { get; }
 
         public CefSharpFrameDriver CurrentFrame { get; set; }
 
-        public Size Size
-        {
-            get
-            {
-                if (IsWPF)
-                {
-                    var size = this.Dynamic().RenderSize;
-                    return new Size((int)(double)size.Width, (int)(double)size.Height);
-                }
-                return new WindowControl(this.AppVar).Size;
-            }
-        }
+        //public Size Size
+        //{
+        //    get
+        //    {
+        //        if (IsWPF)
+        //        {
+        //            var size = this.Dynamic().RenderSize;
+        //            return new Size((int)(double)size.Width, (int)(double)size.Height);
+        //        }
+        //        return new WindowControl(this.AppVar).Size;
+        //    }
+        //}
 
-        bool IsWPF
-        {
-            get
-            {
-                var finder = App.Type<TypeFinder>()();
-                var wpfType = (AppVar)finder.GetType("CefSharp.Wpf.ChromiumWebBrowser");
-                var t = this.Dynamic().GetType();
-                var isWPF = !wpfType.IsNull && (bool)wpfType["IsAssignableFrom", new OperationTypeInfo(typeof(Type).FullName, typeof(Type).FullName)]((AppVar)t).Core;
-                return isWPF;
-            }
-        }
+        //bool IsWPF
+        //{
+        //    get
+        //    {
+        //        var finder = App.Type<TypeFinder>()();
+        //        var wpfType = (AppVar)finder.GetType("CefSharp.Wpf.ChromiumWebBrowser");
+        //        var t = this.Dynamic().GetType();
+        //        var isWPF = !wpfType.IsNull && (bool)wpfType["IsAssignableFrom", new OperationTypeInfo(typeof(Type).FullName, typeof(Type).FullName)]((AppVar)t).Core;
+        //        return isWPF;
+        //    }
+        //}
 
-        public AppVar BrowserCore => this.Dynamic().GetBrowser();
+        public IBrowser BrowserCore => Browser.GetBrowser();
 
         public IntPtr WindowHandle => IntPtr.Zero;
 
-        internal dynamic JavascriptObjectRepository => this.Dynamic().JavascriptObjectRepository;
+        internal IJavascriptObjectRepository JavascriptObjectRepository => Browser.JavascriptObjectRepository;
 
         internal ChromiumWebBrowserDriver(CefSharpDriver driver)
         {
-            AppVar = driver.AppVar;
-            App.LoadAssembly(typeof(JSResultConverter).Assembly);
-            _webBrowserExtensions = App.Type("CefSharp.WebBrowserExtensions");
-
-            MainFrame = CurrentFrame = new CefSharpFrameDriver(driver, null, () => (AppVar)GetMainFrame(), new IWebElement[0]);
+            Browser = driver.Browser;
+            MainFrame = CurrentFrame = new CefSharpFrameDriver(driver, null, Browser.GetMainFrame(), new IWebElement[0]);
 
         }
 
-        public Point PointToScreen(Point clientPoint)
+        public System.Drawing.Point PointToScreen(System.Drawing.Point clientPoint)
         {
-            if (IsWPF)
-            {
-                var pos = this.Dynamic().PointToScreen(App.Type("System.Windows.Point")((double)clientPoint.X, (double)clientPoint.Y));
-                return new Point((int)(double)pos.X, (int)(double)pos.Y);
-            }
-            return new WindowControl(AppVar).PointToScreen(clientPoint);
+            //if (IsWPF)
+            //{
+            //    var pos = this.Dynamic().PointToScreen(App.Type("System.Windows.Point")((double)clientPoint.X, (double)clientPoint.Y));
+            //    return new Point((int)(double)pos.X, (int)(double)pos.Y);
+            //}
+            //return new WindowControl(AppVar).PointToScreen(clientPoint);
+
+            var pos = Browser.PointFromScreen(new System.Windows.Point(clientPoint.X, clientPoint.Y));
+
+            return new System.Drawing.Point((int)pos.X, (int)pos.Y);
+
         }
 
         public void Activate()
         {
-            if (IsWPF)
-            {
-                var source = App.Type("System.Windows.Interop.HwndSource").FromVisual(this);
-                new WindowControl(App, (IntPtr)source.Handle).Activate();
-            }
-            else
-            {
-                new WindowControl(AppVar).Activate();
-            }
-            this.Dynamic().Focus();
+            //if (IsWPF)
+            //{
+            //    var source = System.Windows.Interop.HwndSource.FromVisual(Browser);
+            //    new WindowControl(App, (IntPtr)source.Handle).Activate();
+            //}
+            //else
+            //{
+            //    new WindowControl(AppVar).Activate();
+            //}
+            //var win =Window.GetWindow(Browser);
+            //win.Activate();
+            //this.Browser.Focus();
         }
 
         public void WaitForLoading()
         {
-            while ((bool)this.Dynamic().IsLoading)
+            while (Browser.IsLoading)
             {
                 Thread.Sleep(10);
             }
         }
 
         internal dynamic GetMainFrame()
-            => _webBrowserExtensions.GetMainFrame(this);
+            => Browser.GetMainFrame();
 
         internal void ShowDevTools()
-            => _webBrowserExtensions.ShowDevTools(this);
+            => Browser.ShowDevTools();
 
         public void Close()
         {
-            WindowControl window = null;
-            if (IsWPF)
-            {
-                IntPtr handle = App.Type("System.Windows.Interop.HwndSource").FromVisual(this).Handle;
-                new WindowControl(App, handle).Close();
-            }
-            else
-            {
-                window = new WindowControl(AppVar);
-                while (window.ParentWindow != null) window = window.ParentWindow;
-            }
-            window.Close();
+            Window.GetWindow(Browser)?.Close();
         }
     }
 }

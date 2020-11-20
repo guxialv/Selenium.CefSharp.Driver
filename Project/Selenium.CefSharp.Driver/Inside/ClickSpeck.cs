@@ -38,7 +38,8 @@ element.selected = !element.selected";
                 var pos = element.Location;
                 var size = element.Size;
                 pos.Offset(size.Width / 2, size.Height / 2);
-                element.CotnrolAccessor.Click(pos);
+                //element.CotnrolAccessor.Click(pos);
+                throw new NotImplementedException();
             }
         }
     }

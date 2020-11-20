@@ -6,7 +6,7 @@ namespace Selenium.CefSharp.Driver.Inside
 {
     static class ElementFinder
     {
-        internal static IWebElement FindElementFromDocument(IJavaScriptExecutor js, By by)
+        internal static IWebElement FindElementFromDocument(CefSharpFrameDriver js, By by)
         {
             var text = by.ToString();
             var script = "";
@@ -49,7 +49,7 @@ namespace Selenium.CefSharp.Driver.Inside
             return result;
         }
 
-        internal static ReadOnlyCollection<IWebElement> FindElementsFromDocument(IJavaScriptExecutor js, By by)
+        internal static ReadOnlyCollection<IWebElement> FindElementsFromDocument(CefSharpFrameDriver js, By by)
         {
             var text = by.ToString();
             var script = "";
@@ -151,7 +151,7 @@ return window.__seleniumCefSharpDriver.getElementsByXPath('.//a[contains(., ""{t
             return result;
         }
 
-        internal static ReadOnlyCollection<IWebElement> FindElementsFromElement(IJavaScriptExecutor js, int id, By by)
+        internal static ReadOnlyCollection<IWebElement> FindElementsFromElement(CefSharpFrameDriver js, int id, By by)
         {
             var text = by.ToString();
             var script = "";

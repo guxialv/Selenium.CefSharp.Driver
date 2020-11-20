@@ -1,5 +1,4 @@
-﻿using Codeer.Friendly.Windows.KeyMouse;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions.Internal;
 using OpenQA.Selenium.Internal;
 using Selenium.CefSharp.Driver.Inside;
@@ -16,7 +15,7 @@ namespace Selenium.CefSharp.Driver
     /// Provides a mechanism to get elements off the page for test
     /// </summary>
     public class CefSharpWebElement :
-        IWebElement, 
+        IWebElement,
         IWrapsDriver,
         IFindsById,
         IFindsByClassName,
@@ -130,14 +129,13 @@ namespace Selenium.CefSharp.Driver
 
         internal IJavaScriptExecutor JavaScriptExecutor => _frame;
 
-        internal CotnrolAccessor CotnrolAccessor { get; }
-        
+        //internal CotnrolAccessor CotnrolAccessor { get; }
+
         internal int Id { get; }
 
-        internal CefSharpWebElement(CefSharpFrameDriver frame, CotnrolAccessor cotnrolAccessor, int index)
+        internal CefSharpWebElement(CefSharpFrameDriver frame, int index)
         {
             _frame = frame;
-            CotnrolAccessor = cotnrolAccessor;
             Id = index;
         }
 
@@ -242,33 +240,34 @@ namespace Selenium.CefSharp.Driver
         /// <exception cref="StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM.</exception>
         public void SendKeys(string text)
         {
-            if (_frame.CefSharpDriver.FileDetector.IsFile(text))
-            {
-                var before = NativeMethods.GetWindows(_frame.App.ProcessId);
-                Click();
-                
-                //wait for file dialog.
-                while (true)
-                {
-                    bool hit = false;
-                    foreach (var e in NativeMethods.GetWindows(_frame.App.ProcessId))
-                    {
-                        if (!before.Contains(e))
-                        {
-                            hit = true;
-                            break;
-                        }
-                    }
-                    if (hit) break;
-                    Thread.Sleep(10);
-                }
+            //if (_frame.CefSharpDriver.FileDetector.IsFile(text))
+            //{
+            //    var before = NativeMethods.GetWindows(_frame.App.ProcessId);
+            //    Click();
 
-                _frame.App.SendKeys(text);
-                _frame.App.SendKey(System.Windows.Forms.Keys.Enter);
-                return;
-            }
-            Execute(JsFocus());
-            CotnrolAccessor.SendKeys(text);
+            //    //wait for file dialog.
+            //    while (true)
+            //    {
+            //        bool hit = false;
+            //        foreach (var e in NativeMethods.GetWindows(_frame.App.ProcessId))
+            //        {
+            //            if (!before.Contains(e))
+            //            {
+            //                hit = true;
+            //                break;
+            //            }
+            //        }
+            //        if (hit) break;
+            //        Thread.Sleep(10);
+            //    }
+
+            //    _frame.App.SendKeys(text);
+            //    _frame.App.SendKey(System.Windows.Forms.Keys.Enter);
+            //    return;
+            //}
+            //Execute(JsFocus());
+            //CotnrolAccessor.SendKeys(text);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -289,7 +288,7 @@ namespace Selenium.CefSharp.Driver
         /// <returns>The first matching <see cref="IWebElement"/> on the current context.</returns>
         /// <exception cref="NoSuchElementException">If no element matches the criteria.</exception>
         public IWebElement FindElement(By by)
-            => ElementFinder.FindElementFromElement(JavaScriptExecutor, Id, by);
+            => ElementFinder.FindElementFromElement(_frame, Id, by);
 
         /// <summary>
         /// Finds all <see cref="IWebElement">IWebElements</see> within the current context
@@ -299,7 +298,7 @@ namespace Selenium.CefSharp.Driver
         /// <returns>A <see cref="ReadOnlyCollection{T}"/> of all <see cref="IWebElement">WebElements</see>
         /// matching the current criteria, or an empty list if nothing matches.</returns>
         public ReadOnlyCollection<IWebElement> FindElements(By by)
-            => ElementFinder.FindElementsFromElement(JavaScriptExecutor, Id, by);
+            => ElementFinder.FindElementsFromElement(_frame, Id, by);
 
         /// <summary>
         /// Finds the first element matching the specified id.
@@ -442,8 +441,9 @@ namespace Selenium.CefSharp.Driver
         /// <returns>A <see cref="Screenshot"/> object containing the image.</returns>
         public Screenshot GetScreenshot()
         {
-            ScrollIntoView();
-            return CotnrolAccessor.GetScreenShot(Location, Size);
+            //ScrollIntoView();
+            //return CotnrolAccessor.GetScreenShot(Location, Size);
+            throw new NotImplementedException();
         }
 
         /// <summary>

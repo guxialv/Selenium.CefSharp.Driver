@@ -1,7 +1,4 @@
-﻿using Codeer.Friendly;
-using Codeer.Friendly.Dynamic;
-using Codeer.Friendly.Windows;
-using Codeer.Friendly.Windows.Grasp;
+﻿using CefSharp;
 using OpenQA.Selenium;
 using System;
 using System.Drawing;
@@ -9,29 +6,25 @@ using System.Linq;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
-    class CefSharpFrameDriver :
-        IAppVarOwner,
-        IUIObject,
-        IJavaScriptExecutor
+    class CefSharpFrameDriver : IJavaScriptExecutor
     {
         readonly JavaScriptAdaptor _javaScriptAdaptor;
-        readonly Func<AppVar> _frameGetter;
-        readonly CotnrolAccessor _cotnrolAccessor;
+        //readonly Func<AppVar> _frameGetter;
+        //readonly CotnrolAccessor _cotnrolAccessor;
 
-        public WindowsAppFriend App => (WindowsAppFriend)AppVar.App;
+        //public WindowsAppFriend App => (WindowsAppFriend)AppVar.App;
 
-        public AppVar AppVar => _frameGetter();
+        public IFrame Frame { get; private set; }
+        public IJavascriptObjectRepository JavascriptObjectRepository => CefSharpDriver.JavascriptObjectRepository;
 
-        public AppVar JavascriptObjectRepository => CefSharpDriver.JavascriptObjectRepository;
-
-        public Size Size => FrameElements.Any() ? FrameElements.Last().Size : CefSharpDriver.CurrentBrowser.Size;
+        //  public Size Size => FrameElements.Any() ? FrameElements.Last().Size : CefSharpDriver.CurrentBrowser.Size;
 
         internal string Url
         {
             get => (string)ExecuteScript("return window.location.href;");
             set
             {
-                this.Dynamic().LoadUrl(value);
+                Frame.LoadUrl(value);
                 WaitForLoading();
             }
         }
@@ -39,19 +32,19 @@ namespace Selenium.CefSharp.Driver.Inside
         internal CefSharpDriver CefSharpDriver { get; }
 
         internal CefSharpFrameDriver ParentFrame { get; }
-        
+
         internal IWebElement[] FrameElements { get; }
 
         internal string Title => (string)ExecuteScript("return document.title;");
 
-        internal CefSharpFrameDriver(CefSharpDriver cefSharpDriver, CefSharpFrameDriver parentFrame, Func<AppVar> frameGetter, IWebElement[] frameElement)
+        internal CefSharpFrameDriver(CefSharpDriver cefSharpDriver, CefSharpFrameDriver parentFrame, IFrame frame, IWebElement[] frameElement)
         {
             ParentFrame = parentFrame;
             _javaScriptAdaptor = new JavaScriptAdaptor(this);
             CefSharpDriver = cefSharpDriver;
-            _frameGetter = frameGetter;
+            Frame = frame;
             FrameElements = frameElement;
-            _cotnrolAccessor = new CotnrolAccessor(this);
+            // _cotnrolAccessor = new CotnrolAccessor(this);
         }
 
         public object ExecuteScript(string script, params object[] args)
@@ -71,25 +64,32 @@ namespace Selenium.CefSharp.Driver.Inside
                 offset.Offset(e.Location);
             }
             clientPoint.Offset(offset);
-            return CefSharpDriver.CurrentBrowser.PointToScreen(clientPoint);
+            //return CefSharpDriver.CurrentBrowser.PointToScreen(clientPoint);
+            throw new NotImplementedException();
         }
 
         public void Activate()
-            => CefSharpDriver.CurrentBrowser.Activate();
+        {
+            //=> CefSharpDriver.CurrentBrowser.Activate();
+            throw new NotImplementedException();
+        }
 
         public IWebElement CreateWebElement(int id)
-            => new CefSharpWebElement(this, _cotnrolAccessor, id);
+            => new CefSharpWebElement(this, id);
 
         public Screenshot GetScreenshot()
-            => _cotnrolAccessor.GetScreenShot(new Point(0, 0), Size);
-        
+        {
+            //=> _cotnrolAccessor.GetScreenShot(new Point(0, 0), Size);
+            throw new NotImplementedException();
+        }
+
         public override bool Equals(object obj)
         {
             var target = obj as CefSharpFrameDriver;
             if (target == null) return false;
-            return this.Dynamic().Identifier.Equals(target.Dynamic().Identifier);
+            return this.Frame.Identifier.Equals(target.Frame.Identifier);
         }
 
-        public override int GetHashCode() => this.Dynamic().Identifier;
+        public override int GetHashCode() => (int)this.Frame.Identifier;
     }
 }

@@ -1,14 +1,9 @@
-﻿using Codeer.Friendly;
-using Codeer.Friendly.Windows;
-using Codeer.Friendly.Windows.Grasp;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
 using System.Drawing;
-using Codeer.TestAssistant.GeneratorToolKit;
 using OpenQA.Selenium.Html5;
 using OpenQA.Selenium.Internal;
 using System.Collections.ObjectModel;
-using Codeer.Friendly.Dynamic;
 using System.Linq;
 using Selenium.CefSharp.Driver.InTarget;
 using OpenQA.Selenium.Interactions.Internal;
@@ -16,6 +11,8 @@ using System.Collections.Generic;
 using OpenQA.Selenium.Interactions;
 using System.Diagnostics;
 using Selenium.CefSharp.Driver.Inside;
+using CefSharp.Wpf;
+using CefSharp;
 
 namespace Selenium.CefSharp.Driver
 {
@@ -61,7 +58,6 @@ namespace Selenium.CefSharp.Driver
     /// }
     /// </code>
     /// </example>
-    [ControlDriver(TypeFullName = "CefSharp.Wpf.ChromiumWebBrowser|CefSharp.WinForms.ChromiumWebBrowser")]
     public class CefSharpDriver :
         IWebDriver,
         IJavaScriptExecutor,
@@ -80,27 +76,25 @@ namespace Selenium.CefSharp.Driver
         IHasInputDevices,
 #pragma warning restore CS0618
         IAllowsFileDetection,
-        IActionExecutor,
-        IAppVarOwner,
-        IUIObject
+        IActionExecutor
     {
         ChromiumWebBrowserDriver _chromiumWebBrowser;
-        dynamic _windowManager;
+        //dynamic _windowManager;
 
-        /// <summary>
-        /// Returns the associated application manipulation object.
-        /// </summary>
-        public WindowsAppFriend App { get; }
+        ///// <summary>
+        ///// Returns the associated application manipulation object.
+        ///// </summary>
+        //public WindowsAppFriend App { get; }
 
         /// <summary>
         /// Returns a variable that manipulates a ChromiumWebBrowser object.
         /// </summary>
-        public AppVar AppVar { get; }
+        public ChromiumWebBrowser Browser { get; }
 
         /// <summary>
         /// Returns the size of IUIObject.
         /// </summary>
-        public Size Size => CurrentBrowser.Size;
+        //public Size Size => CurrentBrowser.Size;
 
         /// <summary>
         /// Gets an OpenQA.Selenium.IKeyboard object for sending keystrokes to the browser.
@@ -185,8 +179,8 @@ namespace Selenium.CefSharp.Driver
             {
                 List<IntPtr> list = new List<IntPtr>();
                 list.Add(IntPtr.Zero);
-                List<IntPtr> otherWindows = _windowManager.GetWindowHandles();
-                list.AddRange(otherWindows);
+                //List<IntPtr> otherWindows = _windowManager.GetWindowHandles();
+                //list.AddRange(otherWindows);
                 return new ReadOnlyCollection<string>(list.Select(e => e.ToInt64().ToString()).ToArray());
             }
         }
@@ -198,21 +192,21 @@ namespace Selenium.CefSharp.Driver
 
         internal ICefSharpBrowser CurrentBrowser { get; set; }
 
-        internal AppVar JavascriptObjectRepository => _chromiumWebBrowser.JavascriptObjectRepository;
+        internal IJavascriptObjectRepository JavascriptObjectRepository => _chromiumWebBrowser.JavascriptObjectRepository;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="appVar">AppVar of ChromiumWebBrowser.</param>
-        public CefSharpDriver(AppVar appVar)
+        /// <param name="browser">AppVar of ChromiumWebBrowser.</param>
+        public CefSharpDriver(ChromiumWebBrowser browser)
         {
-            AppVar = appVar;
-            App = (WindowsAppFriend)appVar.App;
+            Browser = browser;
+            //App = (WindowsAppFriend)appVar.App;
             _chromiumWebBrowser = new ChromiumWebBrowserDriver(this);
             CurrentBrowser = _chromiumWebBrowser;
 
-            AppVar mgr = appVar.App.Type<CefSharpWindowManagerFactory>().InstallCefSharpWindowManager(this);
-            if (!mgr.IsNull) _windowManager = mgr.Dynamic();
+            //AppVar mgr = appVar.App.Type<CefSharpWindowManagerFactory>().InstallCefSharpWindowManager(this);
+            //if (!mgr.IsNull) _windowManager = mgr.Dynamic();
 
             CurrentBrowser.WaitForLoading();
         }
@@ -221,7 +215,7 @@ namespace Selenium.CefSharp.Driver
         /// Dispose.
         /// </summary>
         public void Dispose()
-            => AppVar.Dispose();
+            => Browser.Dispose();
 
         /// <summary>
         /// Close the current window, quitting the browser if it is the last window currently
@@ -233,7 +227,11 @@ namespace Selenium.CefSharp.Driver
         /// <summary>
         /// Quits this driver, closing every associated window.
         /// </summary>
-        public void Quit() => Process.GetProcessById(App.ProcessId).Kill();
+        public void Quit()
+        {
+            throw new NotImplementedException();
+            //=> Process.GetProcessById(App.ProcessId).Kill();
+        }
 
         /// <summary>
         /// Instructs the driver to send future commands to a different frame or window.
@@ -255,13 +253,19 @@ namespace Selenium.CefSharp.Driver
         /// <param name="clientPoint">client coordinates.</param>
         /// <returns>screen coordinates.</returns>
         public Point PointToScreen(Point clientPoint)
-            => CurrentBrowser.PointToScreen(clientPoint);
+        {
+            throw new NotImplementedException();
+            //=> CurrentBrowser.PointToScreen(clientPoint);
+        }
 
         /// <summary>
         /// Make it active.
         /// </summary>
         public void Activate()
-            => CurrentBrowser.Activate();
+        {
+            //=> CurrentBrowser.Activate();
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Gets a <see cref="Screenshot"/> object representing the image of the page on the screen.
@@ -275,7 +279,10 @@ namespace Selenium.CefSharp.Driver
         /// </summary>
         /// <param name="actionSequenceList">The list of action sequences to perform.</param>
         public void PerformActions(IList<ActionSequence> actionSequenceList)
-            => ActionsAnalyzer.PerformActions(this, actionSequenceList);
+        {
+            //=> ActionsAnalyzer.PerformActions(this, actionSequenceList);
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Resets the input state of the action executor.
@@ -289,7 +296,7 @@ namespace Selenium.CefSharp.Driver
         /// <returns>The first matching <see cref="IWebElement"/> on the current context.</returns>
         /// <exception cref="NoSuchElementException">If no element matches the criteria.</exception>
         public IWebElement FindElement(By by)
-            => ElementFinder.FindElementFromDocument(this, by);
+            => ElementFinder.FindElementFromDocument(this.CurrentBrowser.MainFrame, by);
 
         /// <summary>
         /// Finds all <see cref="IWebElement">IWebElements</see> within the current context
@@ -299,7 +306,7 @@ namespace Selenium.CefSharp.Driver
         /// <returns>A <see cref="ReadOnlyCollection{T}"/> of all <see cref="IWebElement">WebElements</see>
         /// matching the current criteria, or an empty list if nothing matches.</returns>
         public ReadOnlyCollection<IWebElement> FindElements(By by)
-            => ElementFinder.FindElementsFromDocument(this, by);
+            => ElementFinder.FindElementsFromDocument(this.CurrentBrowser.MainFrame, by);
 
         /// <summary>
         /// Executes JavaScript in the context of the currently selected frame or window.
@@ -536,21 +543,22 @@ namespace Selenium.CefSharp.Driver
                 => _this.ExecuteScript("return document.activeElement;") as IWebElement;
 
             public IAlert Alert()
-                => new Alert(_this.App);
+            {
+                throw new NotImplementedException();
+                // => new Alert(_this.App);
+            }
 
             public IWebDriver Frame(int frameIndex)
             {
                 var frameElements = _this.FindElementsByTagName("iframe");
                 var frameNames = frameElements.Select(e => e.GetAttribute("name")).ToList();
                 var frameElement = frameElements[frameIndex];
-                var frame = _this.App.Type<FrameFinder>().FindFrame(_this.CurrentBrowser.BrowserCore, _this.CurrentBrowser.CurrentFrame, frameNames, frameIndex);
-                if (((AppVar)frame).IsNull)
+                var frame = FrameFinder.FindFrame(_this.CurrentBrowser.BrowserCore, _this.CurrentBrowser.CurrentFrame.Frame, frameNames, frameIndex);
+                if (frame == null)
                 {
                     throw new NotFoundException("Frame was not found.");
                 }
-                _this.CurrentBrowser.CurrentFrame = new CefSharpFrameDriver(_this, _this.CurrentBrowser.CurrentFrame,
-                    () => (AppVar)frame,
-                    _this.CurrentBrowser.CurrentFrame.FrameElements.Concat(new[] { frameElement }).ToArray());
+                _this.CurrentBrowser.CurrentFrame = new CefSharpFrameDriver(_this, _this.CurrentBrowser.CurrentFrame, frame, _this.CurrentBrowser.CurrentFrame.FrameElements.Concat(new[] { frameElement }).ToArray());
                 return _this;
             }
 
@@ -597,7 +605,8 @@ namespace Selenium.CefSharp.Driver
                 if (!long.TryParse(windowName, out var value)) throw new NotSupportedException("Invalid name.");
 
                 var handle = new IntPtr(value);
-                _this.CurrentBrowser = new CefSharpWindowBrowser(_this, handle, _this._windowManager.GetBrowser(handle));
+                //_this.CurrentBrowser = new CefSharpWindowBrowser(_this, handle, _this._windowManager.GetBrowser(handle));
+                throw new NotImplementedException();
 
                 return _this;
             }

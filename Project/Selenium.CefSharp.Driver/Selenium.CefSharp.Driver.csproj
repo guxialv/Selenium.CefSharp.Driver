@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Selenium.CefSharp.Driver</RootNamespace>
     <AssemblyName>Selenium.CefSharp.Driver</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -33,48 +33,45 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Selenium.CefSharp.Driver.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\Selenium.CefSharp.Driver.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\Selenium.CefSharp.Driver.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Codeer.Friendly, Version=2.6.1.0, Culture=neutral, PublicKeyToken=6c44da6fca38aa86, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.2.6.1\lib\net40\Codeer.Friendly.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Dynamic, Version=2.6.1.0, Culture=neutral, PublicKeyToken=376bc779077733e8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.2.6.1\lib\net40\Codeer.Friendly.Dynamic.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Windows, Version=2.15.0.0, Culture=neutral, PublicKeyToken=532f270f1da385b3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.Windows.2.15.0\lib\net20\Codeer.Friendly.Windows.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Windows.Grasp.2.0, Version=2.12.0.0, Culture=neutral, PublicKeyToken=92809a28945fb91d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.Windows.Grasp.2.12.0\lib\net35\Codeer.Friendly.Windows.Grasp.2.0.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Windows.Grasp.3.5, Version=2.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.Windows.Grasp.2.12.0\lib\net35\Codeer.Friendly.Windows.Grasp.3.5.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Windows.KeyMouse.2.0, Version=1.3.14.0, Culture=neutral, PublicKeyToken=315dcaa3c3e851c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.Windows.KeyMouse.1.3.14\lib\net35\Codeer.Friendly.Windows.KeyMouse.2.0.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.Friendly.Windows.KeyMouse.3.5, Version=1.3.14.0, Culture=neutral, PublicKeyToken=39f6ecaa6ad3a1f3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.Friendly.Windows.KeyMouse.1.3.14\lib\net35\Codeer.Friendly.Windows.KeyMouse.3.5.dll</HintPath>
-    </Reference>
-    <Reference Include="Codeer.TestAssistant.GeneratorToolKit, Version=3.10.0.0, Culture=neutral, PublicKeyToken=f7af39ab9bcf13fe, processorArchitecture=MSIL">
-      <HintPath>..\packages\Codeer.TestAssistant.GeneratorToolKit.3.10.0\lib\net20\Codeer.TestAssistant.GeneratorToolKit.dll</HintPath>
-    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Inside\ActionsAnalyzer.cs" />
-    <Compile Include="Inside\Alert.cs" />
+    <Compile Include="AsyncResultBoundObject.cs" />
+    <Compile Include="FrameFinder.cs" />
     <Compile Include="Inside\ApplicationCache.cs" />
     <Compile Include="Inside\CefSharpFrameDriver.cs" />
     <Compile Include="CefSharpDriver.cs" />
@@ -88,19 +85,18 @@
     <Compile Include="Inside\CotnrolAccessor.cs" />
     <Compile Include="Inside\ElementFinder.cs" />
     <Compile Include="Inside\ICefSharpBrowser.cs" />
-    <Compile Include="Inside\KeySpec.cs" />
     <Compile Include="Inside\NativeMethods.cs" />
+    <Compile Include="JSResultConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Inside\Coordinates.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Selenium.CefSharp.Driver.InTarget\Selenium.CefSharp.Driver.InTarget.csproj">
-      <Project>{3dd479ef-1a1c-49ff-83f7-76ffaa14db1b}</Project>
-      <Name>Selenium.CefSharp.Driver.InTarget</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="CefSharp.Wpf">
+      <Version>85.3.130</Version>
+    </PackageReference>
+    <PackageReference Include="Selenium.WebDriver">
+      <Version>3.141.0</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

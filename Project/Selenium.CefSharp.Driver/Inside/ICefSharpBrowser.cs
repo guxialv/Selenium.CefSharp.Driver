@@ -1,14 +1,13 @@
-﻿using Codeer.Friendly;
-using Codeer.Friendly.Windows.Grasp;
+﻿using CefSharp;
 using System;
 
 namespace Selenium.CefSharp.Driver.Inside
 {
-    interface ICefSharpBrowser : IUIObject
+    interface ICefSharpBrowser
     {
         CefSharpFrameDriver MainFrame { get; }
         CefSharpFrameDriver CurrentFrame { get; set; }
-        AppVar BrowserCore { get; }
+        IBrowser BrowserCore { get; }
         IntPtr WindowHandle { get; }
         void WaitForLoading();
         void Close();

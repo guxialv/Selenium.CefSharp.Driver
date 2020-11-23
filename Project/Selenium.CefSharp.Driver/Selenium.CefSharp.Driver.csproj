@@ -54,12 +54,26 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Jayrock">
+      <HintPath>Lib\Jayrock.dll</HintPath>
+    </Reference>
+    <Reference Include="Jayrock.Json">
+      <HintPath>Lib\Jayrock.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Jayrock.Sandbox">
+      <HintPath>Lib\Jayrock.Sandbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>Lib\Jint.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -70,11 +84,23 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crawlers\AttributeHelper.cs" />
+    <Compile Include="Crawlers\CrawlItem.cs" />
+    <Compile Include="Crawlers\Enum.cs" />
+    <Compile Include="Crawlers\ExtendEnumerable.cs" />
+    <Compile Include="Crawlers\FreeDocument.cs" />
+    <Compile Include="Crawlers\HttpHelper.cs" />
+    <Compile Include="Crawlers\HttpItem.cs" />
+    <Compile Include="Crawlers\JavaScriptAnalyzer.cs" />
+    <Compile Include="Crawlers\XPath.cs" />
+    <Compile Include="Crawlers\XPathAnalyzer.cs" />
+    <Compile Include="Scrapy\Command.cs" />
     <Compile Include="Utils\AsyncResultBoundObject.cs" />
     <Compile Include="Utils\FrameFinder.cs" />
     <Compile Include="Inside\ApplicationCache.cs" />
     <Compile Include="Inside\CefSharpFrameDriver.cs" />
     <Compile Include="CefSharpDriver.cs" />
+    <Compile Include="Utils\ElementHighLight.cs" />
     <Compile Include="Utils\JavaScriptAdaptor.cs" />
     <Compile Include="Inside\Storag.cs" />
     <Compile Include="CefSharpWebElement.cs" />
@@ -93,16 +119,25 @@
     <PackageReference Include="CefSharp.Wpf">
       <Version>85.3.130</Version>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="ScrapySharp">
+      <Version>3.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Selenium.WebDriver">
       <Version>3.141.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Javascript\json2.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Javascript\highlight.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Javascript\WebScraping.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Javascript\json2.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Javascript\scrapy.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

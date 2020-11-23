@@ -469,11 +469,17 @@ namespace Selenium.CefSharp.Driver
         internal CefSharpWebElement GetParentElement()
             => Execute<CefSharpWebElement>(JsGetParentElement());
 
+
         internal void ScrollIntoView()
             => Execute(JsScrollIntoView());
 
         internal void Focus()
             => Execute(JsFocus());
+
+        public void HighLight()
+        {
+            Execute(JsHighLight());
+        }
 
         public object Execute(string js)
             => JavaScriptExecutor.ExecuteScript(js, this);
@@ -583,5 +589,14 @@ element.submit();
 const element = arguments[0];
 return element.parentElement;
 ";
+
+        static string JsHighLight()
+        {
+            return "element = arguments[0];" +
+                "original_style = element.getAttribute('style');" +
+                "element.setAttribute('style', original_style + \";" +
+                " border: 2px solid red;\");" +
+                "setTimeout(function(){element.setAttribute('style', original_style);}, 1000);";
+        }
     }
 }

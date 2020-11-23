@@ -5,16 +5,14 @@ VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.CefSharp.Driver", "Selenium.CefSharp.Driver\Selenium.CefSharp.Driver.csproj", "{D4E61820-4BCE-4CEE-8DAE-924C9F8CC9F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.CefSharp.Driver.InTarget", "Selenium.CefSharp.Driver.InTarget\Selenium.CefSharp.Driver.InTarget.csproj", "{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{26AD8B74-3D23-4510-8FEB-7EC3FE309B75}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\Selenium.CefSharp.Driver.nuspec = .nuget\Selenium.CefSharp.Driver.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CefSharpWPF", "CefSharpWPF\CefSharpWPF.csproj", "{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{BB7ABB16-524F-45BA-9436-9CA4406E24A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,18 +30,6 @@ Global
 		{D4E61820-4BCE-4CEE-8DAE-924C9F8CC9F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D4E61820-4BCE-4CEE-8DAE-924C9F8CC9F0}.Release|x86.ActiveCfg = Release|x86
 		{D4E61820-4BCE-4CEE-8DAE-924C9F8CC9F0}.Release|x86.Build.0 = Release|x86
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DD479EF-1A1C-49FF-83F7-76FFAA14DB1B}.Release|x86.ActiveCfg = Release|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED3FF6AE-91E8-4CDB-B6D6-44DF0A2CC712}.Release|x86.ActiveCfg = Release|Any CPU
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Debug|x86.ActiveCfg = Debug|x86
@@ -52,6 +38,14 @@ Global
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Release|x86.ActiveCfg = Release|x86
 		{E8D91287-B59E-4F45-BBE1-5D96CD92DEBA}.Release|x86.Build.0 = Release|x86
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB7ABB16-524F-45BA-9436-9CA4406E24A9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

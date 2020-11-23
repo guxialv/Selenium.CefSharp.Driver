@@ -1,6 +1,9 @@
 ﻿using CefSharp;
 using CefSharp.DevTools.DOM;
+using CefSharp.DevTools.Overlay;
 using CefSharp.Wpf;
+using CefSharpWPF.Helper;
+using CefSharpWPF.Model;
 using CefSharpWPF.WebScraping;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -38,18 +41,21 @@ namespace CefSharpWPF
             set { Set(ref _Address, value); }
         }
 
-        private ObservableCollection<WebElementModel> _WebElements;
+        private ScrapyItemModel _SelectedScrapyItem;
 
-        public ObservableCollection<WebElementModel> WebElements
+        public ScrapyItemModel SelectedScrapyItem
         {
-            get { return _WebElements; }
-            set { Set(ref _WebElements, value); }
+            get { return _SelectedScrapyItem; }
+            set
+            {
+                Set(ref _SelectedScrapyItem, value);
+                ScrapyItemSelectionChanged(value);
+            }
         }
 
 
-        public ObservableCollection<WebScrapingElementModel> WebScrapingElements { get; set; }
-
-
+        public ObservableCollection<ScrapySampleModel> ScrapySamples { get; set; }
+        public ObservableCollection<ScrapyItemModel> ScrapyItems { get; set; }
         public CefSharpDriver CefSharpDriver { get; private set; }
 
         public ICommand GoCommand { get; private set; }
@@ -58,15 +64,19 @@ namespace CefSharpWPF
         public ICommand InJectJSCommand { get; private set; }
         public ICommand DevToolsCommand { get; private set; }
 
+
         public MainWindowViewModel()
         {
-            Address = AddressEditable = @"https://www.jd.com";
-            WebElements = new ObservableCollection<WebElementModel>();
-            WebScrapingElements = new ObservableCollection<WebScrapingElementModel>();
+            Address = AddressEditable = @"https://news.cnblogs.com/n/digg";
+            ScrapySamples = new ObservableCollection<ScrapySampleModel>();
+            ScrapyItems = new ObservableCollection<ScrapyItemModel>();
             GoCommand = new RelayCommand(ExecuteGoCommand);
             FindAllElementCommand = new RelayCommand(ExecuteFindAllElement);
             InJectJSCommand = new RelayCommand(ExecuteInJectJSCommand);
             DevToolsCommand = new RelayCommand(ExecuteDevToolsCommand);
+
+            ScrapySamples.Add(new ScrapySampleModel() { Url = Address });
+            Scrapyhelper.Instance.Initialize();
         }
 
         public void InitCefSharpDriver(ChromiumWebBrowser browser)
@@ -77,13 +87,13 @@ namespace CefSharpWPF
 
         private void Browser_ConsoleMessage(object sender, ConsoleMessageEventArgs e)
         {
-            if (e.Level == LogSeverity.Warning &&
-               BrowserScrapingCommandUtils.TryParse(e.Message, out BrowserScrapingCommand cmd) &&
-               cmd.Command == "click")
+            if (e.Level == LogSeverity.Warning)
             {
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                WebScrapingElements.Add(new WebScrapingElementModel(cmd))
-                );
+                var scrapyItem = Scrapyhelper.Instance.Scrapy(e.Message);
+                if (scrapyItem != null)
+                {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() => ScrapyItems.Add(scrapyItem));
+                }
             }
         }
 
@@ -95,89 +105,89 @@ namespace CefSharpWPF
 
         private void ExecuteFindAllElement()
         {
-            var frames = CefSharpDriver.FindElementsByXPath("*");
-            foreach (var frame in frames.Cast<CefSharpWebElement>())
+            try
             {
-                FindElements(frame);
+
+                var elements = CefSharpDriver.FindElementsByXPath("//*[@id=\"J_cate\"]/ul/li[10]/a[2]");
+
+                foreach (var ele in elements.Cast<CefSharpWebElement>())
+                {
+                    ele.HighLight();
+                }
+                Console.WriteLine(elements.Count);
+                //var frames = CefSharpDriver.FindElementsByXPath("*");
+                //foreach (var frame in frames.Cast<CefSharpWebElement>())
+                //{
+                //    FindElements(frame);
+                //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
-        private void FindElements(CefSharpWebElement webElement)
+        private void ScrapyItemSelectionChanged(ScrapyItemModel scrapyItem)
         {
-            var webmodel = new WebElementModel(webElement);
-            //webmodel.XPath = (string)CefSharpDriver.ExecuteScript(ElementFinder.GetElementXPath(), webElement);
-            WebElements.Add(webmodel);
-
-            var webElements = webElement.FindElementsByXPath("*");
-
-            foreach (var web in webElements.Cast<CefSharpWebElement>())
+            if (scrapyItem == null)
             {
-                FindElements(web);
+                return;
+            }
+            var elements = CefSharpDriver.FindElementsByXPath(scrapyItem.XPath);
+
+            foreach (var ele in elements.Cast<CefSharpWebElement>())
+            {
+                ele.HighLight();
             }
         }
+
+        //private void FindElements(CefSharpWebElement webElement)
+        //{
+        //   // var webmodel = new WebElementModel(webElement);
+        //    //webmodel.XPath = (string)CefSharpDriver.ExecuteScript(ElementFinder.GetElementXPath(), webElement);
+        //   //WebElements.Add(webmodel);
+
+        //    var webElements = webElement.FindElementsByXPath("*");
+
+        //    foreach (var web in webElements.Cast<CefSharpWebElement>())
+        //    {
+        //        FindElements(web);
+        //    }
+        //}
 
         private async void ExecuteInJectJSCommand()
         {
             var json = File.ReadAllText(@"Javascript\json2.js");
-            var elementSearch = File.ReadAllText(@"Javascript\WebScraping.js");
+            var elementSearch = File.ReadAllText(@"Javascript\scrapy.js");
+            var highlight = File.ReadAllText(@"Javascript\highlight.pack.js");
 
             CefSharpDriver.ExecuteScript2(json);
             CefSharpDriver.ExecuteScript2(elementSearch);
+            CefSharpDriver.ExecuteScript2(highlight);
         }
 
 
-        private void ExecuteDevToolsCommand()
+        private async void ExecuteDevToolsCommand()
         {
+            //var highlightConfig = new HighlightConfig();
+
+            //highlightConfig.ContentColor = ToRGBA(Colors.Red);
+            //highlightConfig.ContentColor = ToRGBA(Colors.Red);
+            //highlightConfig.PaddingColor = ToRGBA(Colors.Red);
+            //highlightConfig.CssGridColor = ToRGBA(Colors.Red);
+            //highlightConfig.MarginColor = ToRGBA(Colors.Red);
+            //highlightConfig.ShapeColor = ToRGBA(Colors.Red);
+
             CefSharpDriver.Browser.ShowDevTools();
+            //var client = CefSharpDriver.Browser.GetDevToolsClient();
+            //await client.Inspector.EnableAsync();
+            //await client.Overlay.SetInspectModeAsync(InspectMode.CaptureAreaScreenshot, highlightConfig);
+        }
+
+        private RGBA ToRGBA(Color color)
+        {
+            return new RGBA() { R = color.R, G = color.G, B = color.B, A = color.A };
         }
     }
 
-    public class WebElementModel : ViewModelBase
-    {
-        private int _Id;
-
-        public int Id
-        {
-            get { return _Id; }
-            set { Set(ref _Id, value); }
-        }
-
-
-        private string _Text;
-
-        public string Text
-        {
-            get { return _Text; }
-            set { Set(ref _Text, value); }
-        }
-
-        private string _TagName;
-
-        public string TagName
-        {
-            get { return _TagName; }
-            set { Set(ref _TagName, value); }
-        }
-
-        private string _XPath;
-
-        public string XPath
-        {
-            get { return _XPath; }
-            set { Set(ref _XPath, value); }
-        }
-
-        public CefSharpWebElement WebElement;
-        public WebElementModel()
-        {
-
-        }
-
-        public WebElementModel(CefSharpWebElement webElement)
-        {
-            WebElement = webElement;
-            TagName = webElement.TagName;
-            //Text = webElement.Text;
-        }
-    }
 }

@@ -6,11 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CefSharpWPF
+namespace CefSharpWPF.Model
 {
-    public class WebScrapingElementModel : ViewModelBase
+    public class ScrapingItemModel : ObservableObject
     {
-        public BrowserScrapingCommand Command { get; private set; }
+        public ScrapyCommand Command { get; private set; }
+
 
         private string _Text;
 
@@ -44,27 +45,54 @@ namespace CefSharpWPF
             set { Set(ref _TagName, value); }
         }
 
-        private string _Column;
-
-        public string Column
-        {
-            get { return _Column; }
-            set { Set(ref _Column, value); }
-        }
-
-        public WebScrapingElementModel()
+        public ScrapingItemModel()
         {
 
         }
 
-        public WebScrapingElementModel(BrowserScrapingCommand command)
+        public ScrapingItemModel(ScrapyCommand command)
         {
             Command = command;
             Text = command.ElementText;
             XPath = command.XPathValue;
             CssSelector = command.CssSelector;
             TagName = command.ElementTagName;
-            Column = command.ColumnName;
+        }
+    }
+
+    public class ScrapyItemModel : ObservableObject
+    {
+        private string _Name;
+
+        public string Name
+        {
+            get { return _Name; }
+            set { Set(ref _Name, value); }
+        }
+
+
+        private string _XPath;
+
+        public string XPath
+        {
+            get { return _XPath; }
+            set { Set(ref _XPath, value); }
+        }
+
+        private string _CssSelector;
+
+        public string CssSelector
+        {
+            get { return _CssSelector; }
+            set { Set(ref _CssSelector, value); }
+        }
+
+
+        public List<ScrapyCommand> Cmds { get; private set; }
+
+        public ScrapyItemModel()
+        {
+            Cmds = new List<ScrapyCommand>();
         }
 
     }
